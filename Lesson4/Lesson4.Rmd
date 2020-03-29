@@ -1,0 +1,404 @@
+---
+title: "Lesson4:Problem Set"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#  Quiz1
+```{r}
+library(ggplot2)
+data(diamonds)
+names(diamonds)
+
+summary(diamonds)
+
+?diamonds
+```
+
+
+# Quiz2 Price Histogram
+```{r}
+# Create a histogram of the price of
+# all the diamonds in the diamond data set.
+
+# TYPE YOUR CODE BELOW THE LINE
+# =======================================
+ggplot(aes(x=price),data=diamonds)+geom_histogram()
+```
+#Quiz3 Price Histogram Summary
+```{r}
+# The distribution is tailed. 
+summary(diamonds$price)
+```
+#Quiz4 Diamond Counts
+```{r }
+price=subset(diamonds,diamonds$price< 500)
+price2=subset(diamonds,diamonds$price< 250)
+price3=subset(diamonds,diamonds$price>= 15000)
+summary(price)
+summary(price2)
+summary(price3)
+```
+
+#Quiz5 Cheaper Diamonds
+```{r }
+# Explore the largest peak in the
+# price histogram you created earlier.
+
+# Try limiting the x-axis, altering the bin width,
+# and setting different breaks on the x-axis.
+
+# There won’t be a solution video for this
+# question so go to the discussions to
+# share your thoughts and discover
+# what other people find.
+
+# You can save images by using the ggsave() command.
+# ggsave() will save the last plot created.
+# For example...
+#                  qplot(x = price, data = diamonds)
+#                  ggsave('priceHistogram.png')
+
+# ggsave currently recognises the extensions eps/ps, tex (pictex),
+# pdf, jpeg, tiff, png, bmp, svg and wmf (windows only).
+
+# Submit your final code when you are ready.
+
+# TYPE YOUR CODE BELOW THE LINE
+# ======================================================================
+qplot(x=price,data=diamonds,binwidth=30) +
+         scale_x_continuous(limits=c(0,20000))
+ggsave('priceHistogram.png')
+
+qplot(x=price,data=diamonds,binwidth=50) +
+         scale_x_continuous(limits=c(0,20000))
+ggsave('priceHistogram2.png')
+
+qplot(x=price,data=price,binwidth=30) +
+         scale_x_continuous(limits=c(300,500))
+ggsave('priceHistogram.png')
+```
+#Quiz6 Price by Cut Histograms
+```{r}
+# Break out the histogram of diamond prices by cut.
+
+# You should have five histograms in separate
+# panels on your resulting plot.
+
+# TYPE YOUR CODE BELOW THE LINE
+# ======================================================
+names(diamonds)
+ggplot(aes(x=price),data=diamonds)+geom_histogram()+
+                  scale_x_continuous(limits = c(10,20000))+
+                  facet_wrap(~cut)
+
+```
+Do you think the distributions look the same or different?
+response: No
+
+# Quiz7: Price by Cut
+Which cut has the highest price diamond?
+
+Which cut has the lowest priced diamond?
+
+Which cut has the lowest median price?
+
+```{r}
+by(diamonds$price,diamonds$cut,summary)
+```
+
+ Which cut has the highest price diamond?
+response:Premium,Max is 18823
+
+Which cut has the lowest priced diamond?
+response:Premium and Ideal,Min is 326
+
+Which cut has the lowest median price?
+response:Ideal, Median is 1810
+
+# Quiz8:Scales and Multiple Histograms
+```{r}
+# Look up the documentation for facet_wrap in R Studio.
+# Then, scroll back up and add a parameter to facet_wrap so that
+# the y-axis in the histograms is not fixed. You want the y-axis to
+# be different for each histogram.
+
+qplot(x = price, data = diamonds) + facet_grid(cut ~ color)
+
+```
+#Quiz9:Price per Carat by Cut
+```{r}
+# Create a histogram of price per carat
+# and facet it by cut. You can make adjustments
+# to the code from the previous exercise to get
+# started.
+
+# Adjust the bin width and transform the scale
+# of the x-axis using log10.
+
+#Hint 1: You use the price and carat variables in the parameter for x. # What expression gives you price per carat?
+
+#Hint 2: For long tailed distributions, you can add a ggplot layer such #as scale_x_log10() to transform the variable.
+
+qplot(x=log10(price/carat),data=diamonds) +
+  facet_wrap(~cut)
+
+```
+
+# Quiz10:Price Box Plots}
+```{r}
+# Investigate the price of diamonds using box plots,
+# numerical summaries, and one of the following categorical
+# variables: cut, clarity, or color.
+
+# There won’t be a solution video for this
+# exercise so go to the discussion thread for either
+# BOXPLOTS BY CLARITY, BOXPLOT BY COLOR, or BOXPLOTS BY CUT
+# to share you thoughts and to
+# see what other people found.
+
+# You can save images by using the ggsave() command.
+# ggsave() will save the last plot created.
+# For example...
+#                  qplot(x = price, data = diamonds)
+#                  ggsave('priceHistogram.png')
+
+# ggsave currently recognises the extensions eps/ps, tex (pictex),
+# pdf, jpeg, tiff, png, bmp, svg and wmf (windows only).
+
+# Copy and paste all of the code that you used for
+# your investigation, and submit it when you are ready.
+# ================================================================
+summary(diamonds$clarity)
+qplot(x=clarity,y=price, data=diamonds,geom = 'boxplot')
+ggsave('clarityBox.png')
+
+qplot(x=cut,y=price,data=diamonds,geom='boxplot')
+ggsave('cutBox.png')
+
+qplot(x=color,y=price,data=diamonds,geom='boxplot')+
+scale_y_continuous(limits = c(0,1000))
+ggsave('colorBox.png')
+```
+
+# Quiz11:Interquartile Range - IQR}
+```{r}
+summary(diamonds$color)
+
+by(diamonds$price,diamonds$color,summary)
+
+IQR(subset(diamonds, price <1000)$price)
+IQR(subset(diamonds, color=='D')$price)
+IQR(subset(diamonds, color=='J')$price)
+```
+
+a.What is the price range for the middle 50% of diamonds with color D?
+response:1st Qu is 911;3rd Qu is 4214
+b.What is the price range for the middle 50% of diamonds with color J?
+response:1st Qu is 1860;3rd Qu is 7695
+c.What is the IQR for diamonds with the best color?
+response:IQR-D is 3302.5 
+d.What is the IQR for diamonds with the worstco
+response:IQR-J is 5834.5.c
+
+# Quiz12:Price per Carat Box Plots by Color
+```{r}
+# Investigate the price per carat of diamonds across
+# the different colors of diamonds using boxplots.
+
+# SUBMIT YOUR CODE BELOW THIS LINE
+# ===================================================================
+qplot(x=color, y=price/carat, data=diamonds, geom='boxplot')
+ggsave('boxplot_t.png')
+
+qplot(x=color, y=price/carat, data=diamonds, geom='boxplot')+
+  coord_cartesian(ylim = c(0,10000))
+ggsave('boxplot_2.pdf')
+```
+#Quiz13: Carat Frequenct Polygon
+Investigate the weight of the diamonds(carat)using a frequency polygon.Use different bin difths to see how the frequency polygon changes. what carat size has a count greater than 2000?
+-- 0.3 and 1.01.
+
+```{r}
+#ggplot(diamonds,aes(carat))+geom_freqpoly(binwidth=0.1)
+qplot(x=carat,data=diamonds,
+          binwidth=0.01,
+          geom='freqpoly')+
+          scale_x_continuous(lim=c(0.3,1.5),breaks=seq(0.3,1.5,0.1))
+ggsave('caratFreq.png')
+```
+# Data Wrangling with R
+```{r}
+#install.packages("tidyr")
+#library(tidyr)
+
+#install.packages('dplyr')
+#library(dplyr)
+```
+# Quiz15:Gapminder Data
+
+```{r}
+# The Gapminder website contains over 500 data sets with information about
+# the world's population. Your task is to download a data set of your choice
+# and create 2-5 plots that make use of the techniques from Lesson 3.
+
+# You might use a simple histogram, a boxplot split over a categorical variable,
+# or a frequency polygon. The choice is yours!
+
+# You can find a link to the Gapminder website in the Instructor Notes.
+
+# Once you've completed your investigation, create a post in the discussions that includes:
+#       1. any questions you answered, your observations, and summary statistics
+#       2. snippets of code that created the plots
+#       3. links to the images of your plots
+
+# You can save images by using the ggsave() command.
+# ggsave() will save the last plot created.
+# For example...
+#                  qplot(x = price, data = diamonds)
+#                  ggsave('priceHistogram.png')
+
+# ggsave currently recognises the extensions eps/ps, tex (pictex),
+# pdf, jpeg, tiff, png, bmp, svg and wmf (windows only).
+
+# Copy and paste all of the code that you used for
+# your investigation, and submit it when you are ready.
+# ====================================================================================
+education= read.csv('expenditure_per_student_primary_percent_of_gdp_per_person.csv')
+names(education)
+education2=subset(education, !is.na(X2014))
+summary(education)
+
+
+ggplot(aes(x=X2014),data=education,binwidth=0.1)+geom_histogram()
+ggsave('X2014.png')
+
+```
+# Quiz16.Exploring Your Friends' Birthdays
+```{r}
+# Your task is to investigate the distribution of your friends'
+# birth months and days.
+
+# Here some questions you could answer, and we hope you think of others.
+
+# **********************************************************************
+
+#Q: How many people have the same birthday as you?
+# A:0
+# Which month contains the most number of birthdays?
+# A:March
+# How many birthdays are in each month?
+# A:1  2  3  4  5  6  7  8  9 10 11 12 
+#   89 79 98 81 72 93 86 91 96 89 87 72 
+# Which day of the year has the most number of birthdays?
+# A:14
+# Do you have at least 365 friends that have birthdays on everyday
+# of the year?
+#A:yes.
+# **********************************************************************
+
+# You will need to do some data munging and additional research to
+# complete this task. This task won't be easy, and you may encounter some
+# unexpected challenges along the way. We hope you learn a lot from it though.
+
+# You can expect to spend 30 min or more on this task depending if you
+# use the provided data or obtain your personal data. We also encourage you
+# to use the lubridate package for working with dates. Read over the documentation
+# in RStudio and search for examples online if you need help.
+
+# You'll need to export your Facebooks friends' birthdays to a csv file.
+# You may need to create a calendar of your Facebook friends’ birthdays
+# in a program like Outlook or Gmail and then export the calendar as a
+# csv file.
+
+# Once you load the data into R Studio, you can use the strptime() function
+# to extract the birth months and birth days. We recommend looking up the
+# documentation for the function and finding examples online.
+
+# We've included some links in the Instructor Notes to help get you started.
+
+# Once you've completed your investigation, create a post in the discussions
+# that includes:
+#   1. any questions you answered, your observations, and summary statistics
+#   2. snippets of code that created the plots
+#   3. links to the images of your plots
+
+# You can save images by using the ggsave() command.
+# ggsave() will save the last plot created.
+# For example...
+#                  qplot(x = price, data = diamonds)
+#                  ggsave('priceHistogram.png')
+
+# ggsave currently recognises the extensions eps/ps, tex (pictex),
+# pdf, jpeg, tiff, png, bmp, svg and wmf (windows only).
+
+# Copy and paste all of the code that you used for
+# your investigation below the line. Submit it when you are ready.
+# ===============================================================================
+birthday = read.csv('birthdaysExample.csv')
+names(birthday)
+summary(birthday)
+subset(birthday,dates == '6/1/84')
+
+library(lubridate)
+ddf=data.frame(birthday)
+ddf$date=as.Date(ddf$dates,format="%m/%d/%y")
+ddf$year=year(ymd(ddf$date))
+ddf$month=month(ymd(ddf$date))
+ddf$day=day(ymd(ddf$date))
+
+library(ggplot2)
+ggplot(aes(x=ddf$month),data=ddf)+geom_histogram(color='black',fill='#48CCDD',binwidth =0.1) +scale_x_continuous(limits=c(0,13),breaks = seq(0,13,1))+xlab('Month')+ylab('Counts for the Birthday Month')+scale_y_continuous(limits=c(0,100),breaks=seq(0,100,5))
+ggsave('monthofBirthday.png')
+
+ggplot(aes(x=ddf$day),data=ddf)+geom_histogram(color='black',fill='#48CCDD',binwidth =0.1) +scale_x_continuous(limits=c(0,32),breaks = seq(0,32,1))+xlab('Day')+ylab('Counts for the day of Birth')+scale_y_continuous(limits=c(0,50),breaks=seq(0,50,5))
+ggsave('DayofBirthday.png')
+
+#install.packages('tidyverse')
+#devtools::install_github("tidyverse/lubridate")
+
+
+
+birthMonthTable=table(ddf$month)
+birthMonthTable
+mostCommonMonth=which(birthMonthTable==max(birthMonthTable))
+birthMonthTable=factor(birthMonthTable,levels = c("Jan","Feb", "Mar", "Apr", 
+                                                    "May", "Jun", "Jul", "Aug", 
+                                                    "Sep", "Oct", "Nov", "Dec"))
+month.abb[mostCommonMonth]
+
+birthDayTable=table(ddf$day)
+birthDayTable
+mostCommonDay=which(birthDayTable==max(birthDayTable))
+
+birthYearTable=table(ddf$year)
+birthYearTable
+mostCommonYear=which(birthYearTable==max(birthYearTable))
+
+```
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
