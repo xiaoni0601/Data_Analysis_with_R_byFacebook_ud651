@@ -1,3 +1,10 @@
+---
+editor_options:
+  chunk_output_type: console
+output:
+  pdf_document: default
+  html_document: default
+---
 Lesson 7
 ========================================================
 
@@ -402,7 +409,14 @@ Notes:
 Notes:
 
 ```{r Histograms Revisited}
-
+yo = read.csv('yogurt.csv')
+str(yo)
+yo$id = factor(yo$id)
+str(yo)
+library(ggplot2)
+ggplot(aes(x = price), data = yo) +
+  geom_histogram(binwidth = 10, fill = '#F79420')
+ggsave('hist1.png')
 ```
 
 ***
@@ -411,6 +425,26 @@ Notes:
 Notes:
 
 ```{r Number of Purchases}
+summary(yo)
+unique(yo$price)
+length(unique(yo$price))
+table(yo$price)
+
+# Create a new variable called all.purchases,
+# which gives the total counts of yogurt for
+# each observation or household.
+
+# One way to do this is using the transform
+# function. You can look up the function transform
+# and run the examples of code at the bottom of the
+# documentation to figure out what it does.
+
+# The transform function produces a data frame
+# so if you use it then save the result to 'yo'!
+
+# OR you can figure out another way to create the
+# variable.
+yo = transform(yo, all.purchases = strawberry + blueberry + pina.colada + plain + mixed.berry)
 
 ```
 
@@ -420,7 +454,21 @@ Notes:
 Notes:
 
 ```{r Prices over Time}
+ggplot(aes(x = all.purchases), data = yo) +
+  geom_histogram(binwidth = 1, fill = '#099DD9')
+ggsave('hist2.png')
 
+# Create a scatterplot of price vs time.
+
+# This will be an example of a time series plot.
+
+# Resolve overplotting issues by using
+# techniques you learned in Lesson 4.
+
+# What are some things that you notice?
+ggplot(aes(x = time, y = price), data = yo) +
+  geom_jitter(alpha = 1/20)
+ggsave('scatter1.png')
 ```
 
 ***
@@ -433,6 +481,18 @@ Notes:
 ### Looking at Samples of Households
 
 ```{r Looking at Sample of Households}
+set.seed(6230)
+sample.ids = sample(levels(yo$id), 16)
+sample.ids
+
+ggplot(aes(x = time, y = price),
+       data = subset(yo, id %in% sample.ids)) +
+  facet_wrap( ~ id) +
+  geom_line() +
+  geom_point(aes(size = all.purchases), pch = 1)
+ggsave('seed1.png')
+
+
 
 ```
 
@@ -450,31 +510,46 @@ Notes:
 
 ### Scatterplot Matrix
 Notes:
+```{r} scatterplot_Matrix}
+#install.packages('GGally')
+library(GGally)
+theme_set(theme_minimal(20))
+
+set.seed(1836)
+pf_subset = pf[, c(2:15)]
+ggpairs(pf_subset[sample.int(nrow(pf_subset), 1000), ])
+ggsave('scaMatrix1.png')
+
+```
+
+
 
 ***
 
 ### Even More Variables
 Notes:
 
+```{r read data_nci.tsv}
+nci = read.table('nci.tsv')
+colnames(nci) = c(1:64)
+```
 ***
 
 ### Heat Maps
 Notes:
 
-```{r}
-nci <- read.table("nci.tsv")
-colnames(nci) <- c(1:64)
-```
 
-```{r}
-nci.long.samp <- melt(as.matrix(nci[1:200,]))
-names(nci.long.samp) <- c("gene", "case", "value")
+
+```{r Heat Maps}
+library(reshape2)
+nci.long.samp = melt(as.matrix(nci[1:200,]))
+names(nci.long.samp) = c("gene", "case", "value")
 head(nci.long.samp)
 
 ggplot(aes(y = gene, x = case, fill = value),
   data = nci.long.samp) +
   geom_tile() +
-  scale_fill_gradientn(colours = colorRampPalette(c("blue", "red"))(100))
+  scale_fill_gradientn(colours = colorRampPalette(c("green", "red"))(100))
 ```
 
 
