@@ -1,0 +1,285 @@
+---
+title: "Lesson 8"
+author: "Xiaoni"
+date: "4/5/2020"
+output:
+  html_document: default
+  pdf_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r, include=FALSE}
+options(tinytex.verbose = TRUE)
+```
+#Quiz1. Price Histograms with Facet and Color
+
+```{r Quiz1. Price Histograms with Facet and Color}
+# Create a histogram of diamond prices.
+# Facet the histogram by diamond color
+# and use cut to color the histogram bars.
+
+# The plot should look something like this.
+# http://i.imgur.com/b5xyrOu.jpg
+
+# Note: In the link, a color palette of type
+# 'qual' was used to color the histogram using
+# scale_fill_brewer(type = 'qual')
+library(ggplot2)
+data(diamonds)
+names(diamonds)
+
+ggplot(aes(x = price, fill = cut), data = diamonds) + 
+  geom_histogram() +
+  facet_wrap(~ color) +
+  scale_color_brewer(type='qual') +
+  scale_x_log10()
+ggsave('hist_price.png')
+
+```
+
+# Quiz2. Price vs. Table Colored by Cut
+
+```{r Quiz 2. Price vs. Table Colored by Cut}
+# Create a scatterplot of diamond price vs.
+# table and color the points by the cut of
+# the diamond.
+
+# The plot should look something like this.
+# http://i.imgur.com/rQF9jQr.jpg
+
+# Note: In the link, a color palette of type
+# 'qual' was used to color the scatterplot using
+# scale_color_brewer(type = 'qual')
+
+ggplot(aes(x = table, y = price, color = cut), data = diamonds) +
+  geom_point() +
+  scale_color_brewer(type = 'qual')
+ggsave('scatter.png')
+
+```
+# Quiz4. Price vs. Volume and Diamond Clarity
+```{r Quiz4. Price vs. Volume and Diamond Clarity}
+# Create a scatterplot of diamond price vs.
+# volume (x * y * z) and color the points by
+# the clarity of diamonds. Use scale on the y-axis
+# to take the log10 of price. You should also
+# omit the top 1% of diamond volumes from the plot.
+
+# Note: Volume is a very rough approximation of
+# a diamond's actual volume.
+
+# The plot should look something like this.
+# http://i.imgur.com/excUpea.jpg
+
+# Note: In the link, a color palette of type
+# 'div' was used to color the scatterplot using
+# scale_color_brewer(type = 'div')
+
+diamonds$volume = diamonds$x * diamonds$y * diamonds$z
+ggplot(aes(x = volume, y = price, color = clarity), 
+       data = diamonds) +
+  geom_point() +
+  scale_y_log10() +
+  xlim(0, quantile(diamonds$volume, 0.99))
+ggsave('volume1.png')
+
+```
+# Quiz5. Proportion of Friendships Initiated
+
+```{r Quiz5. Proportion of Friendships Initiated}
+# Many interesting variables are derived from two or more others.
+# For example, we might wonder how much of a person's network on
+# a service like Facebook the user actively initiated. Two users
+# with the same degree (or number of friends) might be very
+# different if one initiated most of those connections on the
+# service, while the other initiated very few. So it could be
+# useful to consider this proportion of existing friendships that
+# the user initiated. This might be a good predictor of how active
+# a user is compared with their peers, or other traits, such as
+# personality (i.e., is this person an extrovert?).
+
+# Your task is to create a new variable called 'prop_initiated'
+# in the Pseudo-Facebook data set. The variable should contain
+# the proportion of friendships that the user initiated.
+
+# This programming assignment WILL BE automatically graded.
+pf = read.delim('pseudo_facebook.tsv')
+pf$prop_initiated = pf$friendships_initiated / pf$friend_count
+
+```
+
+# Quiz6. prop_initiated vs. tenure
+```{r Quiz6. prop_initiated vs. tenure}
+# Create a line graph of the median proportion of
+# friendships initiated ('prop_initiated') vs.
+# tenure and color the line segment by
+# year_joined.bucket.
+
+# Recall, we created year_joined.bucket in Lesson 5
+# by first creating year_joined from the variable tenure.
+# Then, we used the cut function on year_joined to create
+# four bins or cohorts of users.
+
+# (2004, 2009]
+# (2009, 2011]
+# (2011, 2012]
+# (2012, 2014]
+
+# The plot should look something like this.
+# http://i.imgur.com/vNjPtDh.jpg
+# OR this
+# http://i.imgur.com/IBN1ufQ.jpg
+
+# This assignment is not graded and
+# will be marked as correct when you submit.
+
+pf$year_joined = 2014 - ceiling(pf$tenure / 365)
+pf$year_joined.bucket = cut(pf$year_joined, 
+                            c(2004, 2009, 2011, 2012, 2014))
+ggplot(aes(x = tenure, y = prop_initiated), 
+       data = subset(pf, !is.na(year_joined.bucket))) +
+  stat_summary(aes(color = year_joined.bucket),
+               fun = median,
+               geom = 'line')
+ggsave('line1.png')
+```
+# Quiz7. Smoothing prop_initiated vs. tenure
+```{r Quiz7. Smoothing prop_initiated vs. tenure}
+# Smooth the last plot you created of
+# of prop_initiated vs tenure colored by
+# year_joined.bucket. You can bin together ranges
+# of tenure or add a smoother to the plot.
+
+# There won't be a solution image for this exercise.
+# You will answer some questions about your plot in
+# the next two exercises.
+
+# This assignment is not graded and
+# will be marked as correct when you submit.
+
+ggplot(aes(x = tenure, y = prop_initiated), 
+       data = subset(pf, !is.na(year_joined.bucket))) +
+  stat_summary(aes(color = year_joined.bucket),
+               fun = median,
+               geom = 'line') +
+  geom_smooth(aes(color = year_joined.bucket))
+ggsave('line2.png')
+
+
+```
+
+# Quiz9. Largest Group Mean prop_initiated
+
+```{r}
+
+year_joined2012 = subset(pf, year_joined > 2012 & year_joined <= 2014)
+summary(year_joined2012$prop_initiated)
+
+```
+
+# Quiz10. Price/Carat Binned, Faceted, & Colored
+```{r Quiz10. Price/Carat Binned, Faceted, & Colored}
+# Create a scatter plot of the price/carat ratio
+# of diamonds. The variable x should be
+# assigned to cut. The points should be colored
+# by diamond color, and the plot should be
+# faceted by clarity.
+
+# The plot should look something like this.
+# http://i.imgur.com/YzbWkHT.jpg.
+
+# Note: In the link, a color palette of type
+# 'div' was used to color the histogram using
+# scale_color_brewer(type = 'div')
+
+# This assignment is not graded and
+# will be marked as correct when you submit.
+summary(diamonds$carat)
+ggplot(aes(x = cut, y = price/carat, color = color), data = diamonds) +
+  geom_point(size = 0.5) +
+  facet_wrap(~ clarity) +
+  scale_color_brewer(type = 'div') +
+  
+ggsave('pricecarat.png')
+
+```
+# Quiz11.Gapminder Multivariate Analysis
+
+```{r Quiz11.Gapminder Multivariate Analysis}
+# The Gapminder website contains over 500 data sets with information about
+# the world's population. Your task is to continue the investigation you did at the
+# end of Problem Set 4 or you can start fresh and choose a different
+# data set from Gapminder.
+
+# If you’re feeling adventurous or want to try some data munging see if you can
+# find a data set or scrape one from the web.
+
+# In your investigation, examine 3 or more variables and create 2-5 plots that make
+# use of the techniques from Lesson 5.
+
+# You can find a link to the Gapminder website in the Instructor Notes.
+
+# Once you've completed your investigation, create a post in the discussions that includes:
+#       1. the variable(s) you investigated, your observations, and any summary statistics
+#       2. snippets of code that created the plots
+#       3. links to the images of your plots
+
+# Copy and paste all of the code that you used for
+# your investigation, and submit it when you are ready.
+
+babies = read.csv('children_per_woman_total_fertility.csv')
+head(babies, 5)
+names(babies)
+
+ggplot(aes(x = X2000, y = X2050, color = X2020), 
+       data = subset(babies, !is.na(X2000))) +
+  geom_line()
+ggsave('babies1.png')
+
+ggplot(aes(x = X2000, y = X2050), 
+       data = subset(babies, !is.na(X2000))) +
+  geom_line(aes(color = X2020), stat = 'summary', fun = median)
+ggsave('babies2.png')
+
+ggplot(aes(x = X2000, y = X2050, color = X2020), 
+       data = subset(babies, !is.na(X2000))) +
+  geom_line() +
+  geom_hline(yintercept = 2, linetype = 2, color = 'red')
+ggsave('babies3.png')
+
+ggplot(aes(x = X2000, y = X2050), 
+       data = subset(babies, !is.na(X2000))) +
+  geom_smooth(aes(color = X2020))
+ggsave('babies4.png')
+
+set.seed(1230)
+sample.country = sample(levels(babies$country), 16)
+sample.country
+
+
+ggplot(aes(x = X2000, y = X2050),
+       data = subset(babies, country %in% sample.country)) +
+  facet_wrap( ~ country) +
+  geom_point(aes(size = X2020), pch = 2)
+ggsave('babies5.png')
+```
+# reshape function Heat maps
+```{r}
+library(reshape2)
+babies.samp = melt(as.matrix(babies[1:200, 2:184]))
+names(babies.samp) = c("x2000", "x2020", "x2050") 
+head(babies.samp)
+
+ggplot(aes(y = x2020, x = x2000, fill = x2050),
+       data = babies.samp) +
+  geom_tile() +
+  scale_fill_gradientn(colours = colorRampPalette(c("green", "red"))(100))
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
