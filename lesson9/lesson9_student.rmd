@@ -3,7 +3,7 @@ output:
   pdf_document: default
   html_document: default
 ---
-Lesson 6
+Lesson 9
 ========================================================
 
 ### Welcome
