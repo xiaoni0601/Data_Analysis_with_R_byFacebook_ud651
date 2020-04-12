@@ -1,0 +1,55 @@
+---
+title: "Lesson10"
+author: "Xiaoni"
+date: "4/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. Project Overview
+
+
+# 2. Project Details
+1.Step One - Choose your Data Set
+Response: wineQualityReds.csv
+
+2.Step Two - Get Organized
+Response: lesson10,which will contain:
+  The RMD file that contains the analysis, final plots and summary, and reflection (in that order)
+  The HTML file that will be knitted from your RMD file
+  The data set you used (which you will only submit if you found your own data set)
+
+3.Step Three - Explore your Data
+Response: similar with Example project of 'Diamonds Exploration by Chris Saden'.
+
+4.Step Four - Document your Analysis
+Response: Document your exploration and analysis in an RMD file  which you will submit. That file should be formatted in markdown and should contain (in order):
+  1. A stream-of-consciousness analysis and exploration of the data.
+a. Headings and text should organize your thoughts and reflect your analysis as you explored the data.
+b. Plots in this analysis do not need to be polished with labels, units, and titles; these plots are exploratory (quick and dirty). They should, however, be of the appropriate type and effectively convey the information you glean from them.
+c. You can iterate on a plot in the same R chunk, but you don’t need to show every plot iteration in your analysis.
+
+  2. A section at the end called “Final Plots and Summary”
+
+You will select three plots from your analysis to polish and share in this section. The three plots should show different trends and should be polished with appropriate labels, units, and titles (see the Project Rubric for more information).
+
+  3. A final section called “Reflection”
+
+This should contain a few sentences about your struggles, successes, and ideas for future exploration on the data set (see the Project Rubric for more information).
+
+5. Step Five - Knit your RMD file
+
+
+# 3. Project Template RMD File
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.

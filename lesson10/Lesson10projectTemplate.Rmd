@@ -1,0 +1,247 @@
+---
+title: "Lesson10"
+author: "Xiaoni"
+date: "4/7/2020"
+editor_options: 
+  chunk_output_type: console
+---
+========================================================
+https://zhuanlan.zhihu.com/p/54387723
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+
+library(ggplot2)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+wines = read.csv('wineQualityReds.csv')
+names(wines)
+head(wines)
+str(wines)
+table(wines$quality)
+```
+```{r subset}
+library(dplyr)
+
+wineByAlcohol = wines %>% 
+  group_by(alcohol) %>%
+  summarise(mean_fixed.acidity = mean(fixed.acidity),
+            median_residual.sugar = median('residual.sugar'),
+            median_total.sulfur.dioxide = median(total.sulfur.dioxide),
+            median_alcohol = median(alcohol),
+            min_quality = min(quality),
+            max_quality = max(quality),
+            count = n()) %>%
+  arrange(alcohol)
+
+# new dataset wines just 4 variables
+wines2 =  wines[, c('residual.sugar', 'pH', 'alcohol', 'quality')]
+
+```
+
+# Univariate Plots Section
+```{r echo=FALSE, Univariate_Plots}
+summary(wines)
+
+library(ggplot2)
+library(gridExtra)
+p1 = ggplot(aes(x = fixed.acidity), data = wines) +
+  geom_histogram(binwidth = 0.1, fill = '#F79420') +
+  scale_x_continuous(breaks = seq(0, 20, 1))
+
+p2 = ggplot(aes(x = volatile.acidity), data = wines) +
+  geom_histogram(binwidth = 0.01, fill = '#F79420') +
+  scale_x_continuous(breaks = seq(0, 2, 0.1))
+
+p3 = ggplot(aes(x = citric.acid), data = wines) +
+  geom_histogram(binwidth = 0.01, fill = '#F79420') +
+  scale_x_continuous(breaks = seq(0, 1, 0.1))
+
+p4 = ggplot(aes(x = residual.sugar), data = wines) +
+  geom_histogram(binwidth = 0.1, color = 'black', fill = '#5760AB') +
+  scale_x_continuous(limits = c(0.5, 4), breaks = seq(0.5, 4, 1))
+
+p5 = ggplot(aes(x = chlorides), data = wines) +
+  geom_histogram(binwidth = 0.001) +
+  scale_x_continuous(breaks = seq(0, 1, 0.1))
+
+
+p6 = ggplot(aes(x = free.sulfur.dioxide), data = wines) +
+  geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
+  scale_x_continuous(breaks = seq(0, 100, 10))
+
+p7 = ggplot(aes(x = total.sulfur.dioxide), data = wines) +
+  geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
+  scale_x_continuous(breaks = seq(0, 300, 30))
+
+p8 = ggplot(aes(x = density), data = wines) +
+  geom_histogram(binwidth = 0.0001) +
+  scale_x_continuous(breaks = seq(0, 2, 0.001))
+
+p9 = ggplot(aes(x = pH), data = wines) +
+  geom_histogram(binwidth = 0.1, color = 'black', fill = '#5760AB') +
+  scale_x_continuous(breaks = seq(0, 10, 1))
+
+p10 = ggplot(aes(x = sulphates), data = wines) +
+  geom_histogram(binwidth = 0.01) +
+  scale_x_continuous(breaks = seq(0, 2, 0.2))
+
+p11 = ggplot(aes(x = alcohol), data = wines) +
+  geom_histogram(binwidth = 0.1, color = 'black', fill = '#5760AB') +
+  scale_x_continuous(breaks = seq(0, 20, 1))
+
+p12 = ggplot(aes(x = quality), data = wines) +
+  geom_histogram(binwidth = 0.1, color = 'black', fill = '#5760AB') +
+  scale_x_continuous(breaks = seq(0, 10, 1))
+
+grid.arrange(p1, p2, p3, p5, p6, p7, p8, p10, p4, p9, p11, p12, ncol = 4)
+
+```
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+My dataset consists of 13 variables, with 1599 observations.
+
+### What is/are the main feature(s) of interest in your dataset?
+The main features of interest in the data set are residual sugar,pH, alcohol and quality. I’d like to determine which features are best for predicting the quality of a wine. I suspect pH and some combination of the other variables can be used to build a predictive model to wines quality.
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+Some variables shows patten like Binomial distribution, eg "pH', "residual.sugar".
+While "free.sulfur.dioxide", "total.sulfur.dioxide" and "alcohol" variables shows that they looks like skewed to the right.
+For example, most wines are of pH round 3.3, with gradually fewer wines while pH increase or decrease.  Alchol is skewed to the right, with most wines of higher alchol are 9.5.
+A majority of wines are of quality with 5 or 6.
+
+### Did you create any new variables from existing variables in the dataset?
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+
+```{r cut quality}
+table(wines$quality)
+wines$quality.bucket = cut(wines$quality,
+                           c(2, 4, 6, 8))
+table(wines$quality.bucket)
+```
+
+
+# Bivariate Plots Section
+```{r echo=FALSE, Bivariate_Plots}
+
+```
+
+
+# alcohol vs. sulphates and quality
+```{r alcohol vs. sulphates and quality}
+ggplot(aes(x = sulphates, y = alcohol),
+       data = wines) +
+  stat_summary(aes(color = quality.bucket), 
+               fun = median, 
+               geom = "line") +
+  ggtitle('alcohol vs. sulphates and quality')
+
+ggsave('alcoholSulphates1.png')
+
+```
+
+
+```{r boxplot}
+ggplot(aes(quality.bucket, alcohol), data = wines) +
+  geom_boxplot()
+ggsave('box1.png')
+
+
+```
+Therefore, higher quality, higher alcohol.
+
+
+```{r residual.sugar vs. quality}
+ggplot(aes(y = residual.sugar, x = quality.bucket), data = wines) +
+  geom_point()
+ggsave('scatter1.png')
+
+```
+
+Therefore, different quality, most residual.sugar are less than 6.
+
+```{r total.sulfur.dioxide vs quality}
+ggplot(aes(y = total.sulfur.dioxide, x = quality.bucket), data = wines) +
+  geom_line()
+ggsave('totalQuality.png')
+
+```
+
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+### What was the strongest relationship you found?
+
+
+
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+### Were there any interesting or surprising interactions between features?
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r Plot_One}
+library(ggplot2)
+library(GGally)
+library(scales)
+library(memisc)
+
+ggpairs(wines2,
+        lower = list(continuous = 'points', combo = 'facethist', discrete = 'facetbar', na = 'na'),
+        upper = list(continuous = 'cor', combo = 'box_no_facet', discrete = 'facetbar', na = 'na'),
+        diag = list(continuous = "densityDiag", discrete = "barDiag"), na = "naDiag")
+
+ggsave('matrix1.png')
+
+
+```
+
+### Description One
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+
+```
+
+### Description Two
+
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+
+```
+
+### Description Three
+
+------
+
+# Reflection
