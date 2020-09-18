@@ -6,7 +6,6 @@ editor_options:
   chunk_output_type: console
 ---
 ========================================================
-https://zhuanlan.zhihu.com/p/54387723
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
